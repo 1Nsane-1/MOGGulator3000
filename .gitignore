@@ -1,0 +1,32 @@
+# Сборка CMake и временные каталоги
+/build/
+/out/
+/bin/
+/lib/
+
+# Файлы конфигурации VS Code и Visual Studio
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+.vs/
+*.vcxproj*
+
+# Временные файлы компиляции и ОС (Windows/macOS)
+*.obj
+*.exe
+*.dll
+*.so
+*.dylib
+*.a
+*.lib
+*.pdb
+*.user
+*.suo
+.DS_Store
+Thumbs.db
+
+# Локальная база данных SQLite
+*.sqlite
+*.db-journal
+*.db-wal
