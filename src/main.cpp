@@ -1,34 +1,41 @@
 #include <iostream>
-#include <windows.h> // Добавлено для Windows UTF-8
+#include <windows.h>
 #include "core/math_expression.h"
+#include "core/evaluator.h"
 #include "core/step_generator.h"
 #include "db/history_entry.h"
+#include "db/history_repository.h"
 
 int main() {
-    // Включаем поддержку UTF-8 в консоли Windows
     SetConsoleOutputCP(CP_UTF8);
     SetConsoleCP(CP_UTF8);
 
-    std::cout << "=== MOGGulator3000 Test Run ===" << std::endl << std::endl;
+    std::cout << "=== MOGGulator3000: Интеграционный запуск ===" << std::endl << std::endl;
 
-    // 1. Проверка модуля MathExpression
+    // 1. Модуль MathExpression (Ввод и нормализация)
     mogg::MathExpression expr(" 2.5 + 3,7 : 2 ");
-    std::cout << "[MathExpression Test]" << std::endl;
-    std::cout << "Raw input:        \"" << expr.getRaw() << "\"" << std::endl;
-    std::cout << "Normalized output: \"" << expr.getNormalized() << "\"" << std::endl << std::endl;
+    std::cout << "[1. MathExpression] Входная строка: \"" << expr.getRaw() << "\"" << std::endl;
+    std::cout << "[1. MathExpression] После нормализации: \"" << expr.getNormalized() << "\"" << std::endl << std::endl;
 
-    // 2. Проверка модуля StepGenerator
-    mogg::StepGenerator steps;
-    steps.addStep("Деление: 3.7 / 2 = 1.85");
-    steps.addStep("Сложение: 2.5 + 1.85 = 4.35");
+    // 2. Модуль StepGenerator & 3. Модуль Evaluator
+    mogg::StepGenerator stepGen;
+    mogg::Evaluator evaluator;
+    double result = evaluator.evaluate(expr.getNormalized(), stepGen);
 
-    std::cout << "[StepGenerator Test]" << std::endl;
-    std::cout << steps.format() << std::endl;
+    std::cout << "[2. Evaluator] Вычисленный результат: " << result << std::endl << std::endl;
+    std::cout << "[3. StepGenerator] Сгенерированные шаги решения:" << std::endl;
+    std::cout << stepGen.format() << std::endl;
 
-    // 3. Проверка модуля HistoryEntry
-    mogg::HistoryEntry entry(1, expr.getNormalized(), "4.35", "2026-09-24");
-    std::cout << "[HistoryEntry JSON Test]" << std::endl;
-    std::cout << entry.toJson() << std::endl;
+    // 4. Модуль HistoryEntry & 5. Модуль HistoryRepository
+    mogg::HistoryEntry entry(1, expr.getNormalized(), "4.35", "2026-09-25");
+    mogg::HistoryRepository repository;
+    repository.save(entry);
 
+    std::cout << "[4 & 5. HistoryRepository] Запись сохранена в БД:" << std::endl;
+    for (const auto& item : repository.getAll()) {
+        std::cout << item.toJson() << std::endl;
+    }
+
+    std::cout << "\n=== Интеграция прошла успешно! ===" << std::endl;
     return 0;
-} 
+}
