@@ -31,4 +31,4 @@ int main() {
     std::cout << entry.toJson() << std::endl;
 
     return 0;
-}
+} 
