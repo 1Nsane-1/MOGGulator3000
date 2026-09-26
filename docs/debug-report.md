@@ -62,4 +62,4 @@
 
 1. Запусти отладку в VS Code (`F5`) или в терминале Linux.
 2. Используй сочетание клавиш **`Shift` + `PrtScn`** (в Ubuntu/Debian/Fedora) для выделения области экрана.
-3. Сохрани снимок в папку `docs/screenshots/gdb_breakpoint.png`[cite: 6].
+3. Сохрани снимок в папку `docs/screenshots/gdb_breakpoint.png`[cite: 6].                  
