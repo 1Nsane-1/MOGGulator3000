@@ -84,3 +84,29 @@ stateDiagram-v2
     СостояниеОшибки --> ОжиданиеВвода: Показать предупреждение
     ВыводРезультата --> ОжиданиеВвода: Готов к новому вводу
 ```
+# Диаграмма компонентов системы MOGGulator3000 (Модуль исключений)
+
+```mermaid
+graph TD
+    classDef core fill:#2b5c8f,stroke:#fff,stroke-width:2px,color:#fff;
+    classDef err fill:#c62828,stroke:#fff,stroke-width:2px,color:#fff;
+    
+    classDef db fill:#2e7d32,stroke:#fff,stroke-width:2px,color:#fff;
+
+    subgraph CoreModule [" Модуль ядра (src/core) "]
+        EV[Evaluator]:::core
+        EX[exceptions.h<br/>MoggException]:::err
+    end
+
+    subgraph DbModule [" Модуль БД (src/db) "]
+        HR[HistoryRepository]:::db
+    end
+
+    MAIN[Точка входа main.cpp]:::core
+
+    %% Связи
+    EV -->|выбрасывает ValidationError / MathError| EX
+    HR -->|выбрасывает StorageError| EX
+    MAIN -->|перехватывает MoggException| EX
+    MAIN --> EV
+    MAIN --> HR
