@@ -1,17 +1,27 @@
 #include "evaluator.h"
+#include "exceptions.h"
 #include <iostream>
-#include <stdexcept>
+#include <algorithm>
 
 namespace mogg {
 
 double Evaluator::evaluate(const std::string& expression, StepGenerator& stepGen) {
+    // 1. Проверка на пустой ввод
     if (expression.empty()) {
-        throw std::invalid_argument("ОБНАРУЖЕНА ОШИБКА: Пустая строка выражения!");
+        throw ValidationError("Выражение не может быть пустым!");
     }
 
-    // Проверка на деление на ноль
+    // 2. Проверка недопустимых символов (разрешены цифры, точка, запятая, +, -, *, /, :, пробелы)
+    for (char c : expression) {
+        if (!std::isdigit(c) && c != '.' && c != ',' && c != '+' && 
+            c != '-' && c != '*' && c != '/' && c != ':' && c != ' ') {
+            throw ValidationError(std::string("Обнаружен недопустимый символ в выражении: '") + c + "'");
+        }
+    }
+
+    // 3. Проверка деления на ноль
     if (expression.find("/0") != std::string::npos || expression.find(":0") != std::string::npos) {
-        throw std::runtime_error("ОБНАРУЖЕНА ОШИБКА: Деление на ноль невозможно!");
+        throw MathError("Критическая математическая ошибка: Деление на ноль невозможно!");
     }
 
     stepGen.addStep("Разбор нормализованного выражения: " + expression);

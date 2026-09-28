@@ -1,47 +1,56 @@
 #include <iostream>
-#include <chrono>
+#include <vector>
 #include "core/math_expression.h"
 #include "core/evaluator.h"
 #include "core/step_generator.h"
+#include "core/exceptions.h"
 #include "db/history_entry.h"
 #include "db/history_repository.h"
 
-// Переключатель отладочного режима (1 = ВКЛ, 0 = ВЫКЛ)
-#define DEBUG_MODE 1
+void processExpression(const std::string& rawInput) {
+    std::cout << "\n-----------------------------------" << std::endl;
+    std::cout << "Входная строка: \"" << rawInput << "\"" << std::endl;
+
+    try {
+        mogg::MathExpression expr(rawInput);
+        mogg::StepGenerator stepGen;
+        mogg::Evaluator evaluator;
+
+        double result = evaluator.evaluate(expr.getNormalized(), stepGen);
+
+        mogg::HistoryEntry entry(1, expr.getNormalized(), std::to_string(result), "2026-09-27");
+        mogg::HistoryRepository repository;
+        repository.save(entry);
+
+        std::cout << " Успешный расчет! Результат: " << result << std::endl;
+        std::cout << "Шаги решения:\n" << stepGen.format();
+
+    } catch (const mogg::ValidationError& e) {
+        std::cout << "⚠️ [ПРЕДУПРЕЖДЕНИЕ ВАЛИДАЦИИ] (Код: " << e.getErrorCode() << "): " << e.what() << std::endl;
+    } catch (const mogg::MathError& e) {
+        std::cout << "❌ [МАТЕМАТИЧЕСКАЯ ОШИБКА] (Код: " << e.getErrorCode() << "): " << e.what() << std::endl;
+    } catch (const mogg::StorageError& e) {
+        std::cout << "💾 [ОШИБКА ХРАНИЛИЩА] (Код: " << e.getErrorCode() << "): " << e.what() << std::endl;
+    } catch (const std::exception& e) {
+        std::cout << "🆘 [НЕИЗВЕСТНАЯ СИСТЕМНАЯ ОШИБКА]: " << e.what() << std::endl;
+    }
+}
 
 int main() {
-    #if DEBUG_MODE
-        std::cout << "[DEBUG LOG] Запуск приложения в режиме отладки (Linux x86_64)" << std::endl;
-    #endif
+    std::cout << "=== Тестирование устойчивости MOGGulator3000 к ошибкам ===" << std::endl;
 
-    auto startTime = std::chrono::high_resolution_clock::now();
+    // Набор тестов (корректные и некорректные)
+    std::vector<std::string> testInputs = {
+        "2.5 + 3,7 : 2",   // Корректное выражение
+        "10 / 0",          // Деление на ноль
+        "2.5 + abc - 5",   // Недопустимые символы
+        ""                 // Пустая строка
+    };
 
-    // 1. Нормализация выражения
-    mogg::MathExpression expr(" 2.5 + 3,7 : 2 ");
-    
-    #if DEBUG_MODE
-        std::cout << "[DEBUG LOG] Исходная строка: \"" << expr.getRaw() << "\"" << std::endl;
-        std::cout << "[DEBUG LOG] Нормализованная строка: \"" << expr.getNormalized() << "\"" << std::endl;
-    #endif
+    for (const auto& input : testInputs) {
+        processExpression(input);
+    }
 
-    // 2. Вычисление и шаги
-    mogg::StepGenerator stepGen;
-    mogg::Evaluator evaluator;
-    double result = evaluator.evaluate(expr.getNormalized(), stepGen);
-
-    // 3. Сохранение истории
-    mogg::HistoryEntry entry(1, expr.getNormalized(), std::to_string(result), "2026-09-26");
-    mogg::HistoryRepository repository;
-    repository.save(entry);
-
-    auto endTime = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
-
-    std::cout << "\n=== MOGGulator3000 (Linux Build) ===" << std::endl;
-    std::cout << "Выражение: " << expr.getNormalized() << std::endl;
-    std::cout << "Результат:  " << result << std::endl;
-    std::cout << "Шаги решения:\n" << stepGen.format();
-    std::cout << "Время выполнения: " << duration << " мкс" << std::endl;
-
+    std::cout << "\nВсе исключения успешно обработаны. Приложение продолжает работу!" << std::endl;
     return 0;
 }
