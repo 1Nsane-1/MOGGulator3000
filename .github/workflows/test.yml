@@ -1,0 +1,24 @@
+name: C++ CMake Build & Unit Tests
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main", "develop" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Configure CMake
+      run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+
+    - name: Build test executable
+      run: cmake --build build --config Release --target unit_tests
+
+    - name: Run Unit Tests (CTest)
+      run: ctest --test-dir build --output-on-failure
