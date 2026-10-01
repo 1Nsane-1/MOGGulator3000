@@ -11,6 +11,7 @@
 #include "db/history_repository.h"
 #include "core/exceptions.h"
 
+using namespace mogg;
 namespace fs = std::filesystem;
 
 void run_test(const std::string& test_name, void (*test_func)()) {
