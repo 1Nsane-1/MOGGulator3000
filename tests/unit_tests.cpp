@@ -3,11 +3,13 @@
 #include <cmath>
 #include <filesystem>
 #include <fstream>
-#include "../src/core/evaluator.h"
-#include "../src/core/math_expression.h"
-#include "../src/core/step_generator.h"
-#include "../src/db/history_repository.h"
-#include "../src/core/exceptions.h"
+#include <string>
+
+#include "core/evaluator.h"
+#include "core/math_expression.h"
+#include "core/step_generator.h"
+#include "db/history_repository.h"
+#include "core/exceptions.h"
 
 namespace fs = std::filesystem;
 

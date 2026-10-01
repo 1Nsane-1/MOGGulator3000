@@ -4,32 +4,21 @@ project(MOGGulator3000 CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-include_directories(src)
+# Автоматически собираем все исходники из src, исключая главный файл main.cpp
+file(GLOB_RECURSE SRC_FILES "src/*.cpp")
+list(FILTER SRC_FILES EXCLUDE REGEX ".*main\\.cpp$")
 
-set(SOURCES
-    src/main.cpp
-    src/core/evaluator.cpp
-    src/core/math_expression.cpp
-    src/core/step_generator.cpp
-    src/db/history_entry.cpp
-    src/db/history_repository.cpp
-)
+# Обычная сборка приложения
+add_executable(MOGGulator3000 src/main.cpp ${SRC_FILES})
+target_include_directories(MOGGulator3000 PRIVATE src src/core src/db)
 
-add_executable(MOGGulator3000 ${SOURCES})
-
-# Подключение модульных тестов
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/CMakeLists.txt")
-    add_subdirectory(tests)
-endif()
+# Настройка unit-тестов для CTest / CI
 enable_testing()
 
 add_executable(unit_tests
     tests/unit_tests.cpp
-    src/core/evaluator.cpp
-    src/core/math_expression.cpp
-    src/core/step_generator.cpp
-    src/db/history_repository.cpp
+    ${SRC_FILES}
 )
 
-target_include_directories(unit_tests PRIVATE src)
+target_include_directories(unit_tests PRIVATE src src/core src/db)
 add_test(NAME MOGGulatorUnitTests COMMAND unit_tests)
