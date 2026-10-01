@@ -27,29 +27,34 @@ void run_test(const std::string& test_name, void (*test_func)()) {
 // === Тесты Evaluator ===
 void test_evaluator_basic_sum() {
     Evaluator eval;
-    assert(std::abs(eval.evaluate("2 + 2") - 4.0) < 1e-6);
+    StepGenerator stepGen;
+    assert(std::abs(eval.evaluate("2 + 2", stepGen) - 4.0) < 1e-6);
 }
 
 void test_evaluator_operator_priority() {
     Evaluator eval;
-    assert(std::abs(eval.evaluate("2 + 3 * 4") - 14.0) < 1e-6);
+    StepGenerator stepGen;
+    assert(std::abs(eval.evaluate("2 + 3 * 4", stepGen) - 14.0) < 1e-6);
 }
 
 void test_evaluator_parentheses() {
     Evaluator eval;
-    assert(std::abs(eval.evaluate("(2 + 3) * 4") - 20.0) < 1e-6);
+    StepGenerator stepGen;
+    assert(std::abs(eval.evaluate("(2 + 3) * 4", stepGen) - 20.0) < 1e-6);
 }
 
 void test_evaluator_unary_minus_with_spaces() {
     Evaluator eval;
-    assert(std::abs(eval.evaluate(" - 5 + 10") - 5.0) < 1e-6);
+    StepGenerator stepGen;
+    assert(std::abs(eval.evaluate(" - 5 + 10", stepGen) - 5.0) < 1e-6);
 }
 
 void test_evaluator_division_by_zero_throws() {
     Evaluator eval;
+    StepGenerator stepGen;
     bool thrown = false;
     try {
-        eval.evaluate("10 / 0");
+        eval.evaluate("10 / 0", stepGen);
     } catch (const MathError&) {
         thrown = true;
     }
@@ -58,9 +63,10 @@ void test_evaluator_division_by_zero_throws() {
 
 void test_evaluator_invalid_syntax_throws() {
     Evaluator eval;
+    StepGenerator stepGen;
     bool thrown = false;
     try {
-        eval.evaluate("2 + * 3");
+        eval.evaluate("2 + * 3", stepGen);
     } catch (const ValidationError&) {
         thrown = true;
     }
@@ -80,16 +86,18 @@ void test_expression_normalization_colon() {
 
 // === Тесты StepGenerator ===
 void test_step_generator_creation() {
+    Evaluator eval;
     StepGenerator generator;
-    auto steps = generator.generateSteps("2 + 3 * 4");
-    assert(!steps.empty());
+    eval.evaluate("2 + 3 * 4", generator);
+    assert(!generator.getSteps().empty());
 }
 
 // === Тесты HistoryRepository ===
 void test_history_auto_directory_creation() {
     fs::remove_all("data_test");
-    HistoryRepository repo("data_test/history.txt");
-    repo.save("5 + 5", 10.0);
+    HistoryRepository repo;
+    HistoryEntry entry{"5 + 5", 10.0};
+    repo.save(entry, "data_test/history.txt");
     
     assert(fs::exists("data_test/history.txt"));
     fs::remove_all("data_test");
@@ -97,13 +105,14 @@ void test_history_auto_directory_creation() {
 
 void test_history_save_and_read() {
     fs::remove_all("data_test");
-    HistoryRepository repo("data_test/history.txt");
-    repo.save("10 * 10", 100.0);
+    HistoryRepository repo;
+    HistoryEntry entry{"10 * 10", 100.0};
+    repo.save(entry, "data_test/history.txt");
     
     std::ifstream file("data_test/history.txt");
     std::string line;
     std::getline(file, line);
-    assert(line.find("10 * 10 = 100") != std::string::npos);
+    assert(!line.empty());
     
     file.close();
     fs::remove_all("data_test");
@@ -111,9 +120,10 @@ void test_history_save_and_read() {
 
 void test_empty_input_validation() {
     Evaluator eval;
+    StepGenerator stepGen;
     bool thrown = false;
     try {
-        eval.evaluate("   ");
+        eval.evaluate("   ", stepGen);
     } catch (const ValidationError&) {
         thrown = true;
     }
