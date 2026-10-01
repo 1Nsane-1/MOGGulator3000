@@ -23,8 +23,8 @@ void HistoryRepository::save(const HistoryEntry& entry, const std::string& filep
         throw StorageError("Не удалось открыть файл истории для записи");
     }
 
-    // Записываем данные в файл
-    file << "[" << entry.date << "] " << entry.expression << " = " << entry.result << "\n";
+    // Обращение к приватным полям заменено на вызов геттеров
+    file << "[" << entry.getDate() << "] " << entry.getExpression() << " = " << entry.getResult() << "\n";
 }
 
 } // namespace mogg
