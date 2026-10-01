@@ -96,7 +96,9 @@ void test_step_generator_creation() {
 void test_history_auto_directory_creation() {
     fs::remove_all("data_test");
     HistoryRepository repo;
-    HistoryEntry entry{"5 + 5", 10.0};
+    
+    // Используем правильный конструктор: id, expression, result, date
+    HistoryEntry entry{1, "5 + 5", "10", "2026-09-30"};
     repo.save(entry, "data_test/history.txt");
     
     assert(fs::exists("data_test/history.txt"));
@@ -106,7 +108,9 @@ void test_history_auto_directory_creation() {
 void test_history_save_and_read() {
     fs::remove_all("data_test");
     HistoryRepository repo;
-    HistoryEntry entry{"10 * 10", 100.0};
+    
+    // Используем правильный конструктор: id, expression, result, date
+    HistoryEntry entry{2, "10 * 10", "100", "2026-09-30"};
     repo.save(entry, "data_test/history.txt");
     
     std::ifstream file("data_test/history.txt");
