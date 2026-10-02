@@ -28,25 +28,25 @@ void run_test(const std::string& test_name, void (*test_func)()) {
 void test_evaluator_basic_sum() {
     Evaluator eval;
     StepGenerator stepGen;
-    assert(std::abs(eval.evaluate("2 + 2", stepGen) - 4.0) < 1e-6);
+    assert(std::abs(eval.evaluate("2 + 2", stepGen) - 4.0) < Evaluator::COMPARISON_EPSILON);
 }
 
 void test_evaluator_operator_priority() {
     Evaluator eval;
     StepGenerator stepGen;
-    assert(std::abs(eval.evaluate("2 + 3 * 4", stepGen) - 14.0) < 1e-6);
+    assert(std::abs(eval.evaluate("2 + 3 * 4", stepGen) - 14.0) < Evaluator::COMPARISON_EPSILON);
 }
 
 void test_evaluator_parentheses() {
     Evaluator eval;
     StepGenerator stepGen;
-    assert(std::abs(eval.evaluate("(2 + 3) * 4", stepGen) - 20.0) < 1e-6);
+    assert(std::abs(eval.evaluate("(2 + 3) * 4", stepGen) - 20.0) < Evaluator::COMPARISON_EPSILON);
 }
 
 void test_evaluator_unary_minus_with_spaces() {
     Evaluator eval;
     StepGenerator stepGen;
-    assert(std::abs(eval.evaluate(" - 5 + 10", stepGen) - 5.0) < 1e-6);
+    assert(std::abs(eval.evaluate(" - 5 + 10", stepGen) - 5.0) < Evaluator::COMPARISON_EPSILON);
 }
 
 void test_evaluator_division_by_zero_throws() {
@@ -76,12 +76,12 @@ void test_evaluator_invalid_syntax_throws() {
 // === Тесты MathExpression ===
 void test_expression_normalization_commas() {
     MathExpression expr("2,5 + 3,5");
-    assert(expr.getNormalizedText() == "2.5 + 3.5");
+    assert(expr.getNormalized() == "2.5 + 3.5");
 }
 
 void test_expression_normalization_colon() {
     MathExpression expr("12:4");
-    assert(expr.getNormalizedText() == "12/4");
+    assert(expr.getNormalized() == "12/4");
 }
 
 // === Тесты StepGenerator ===
@@ -97,8 +97,7 @@ void test_history_auto_directory_creation() {
     fs::remove_all("data_test");
     HistoryRepository repo;
     
-    // Используем правильный конструктор: id, expression, result, date
-    HistoryEntry entry{1, "5 + 5", "10", "2026-09-30"};
+    HistoryEntry entry{1, "5 + 5", "10", "2026-10-02"};
     repo.save(entry, "data_test/history.txt");
     
     assert(fs::exists("data_test/history.txt"));
@@ -109,8 +108,7 @@ void test_history_save_and_read() {
     fs::remove_all("data_test");
     HistoryRepository repo;
     
-    // Используем правильный конструктор: id, expression, result, date
-    HistoryEntry entry{2, "10 * 10", "100", "2026-09-30"};
+    HistoryEntry entry{2, "10 * 10", "100", "2026-10-02"};
     repo.save(entry, "data_test/history.txt");
     
     std::ifstream file("data_test/history.txt");
