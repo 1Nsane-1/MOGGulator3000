@@ -2,11 +2,10 @@
 #include "../core/exceptions.h"
 #include <fstream>
 #include <filesystem>
-#include <string>
 
 namespace mogg {
 
-void HistoryRepository::save(const HistoryEntry& entry, const std::string& filepath) {
+void HistoryRepository::save(const HistoryEntry& historyEntry, const std::string& filepath) {
     namespace fs = std::filesystem;
     
     try {
@@ -23,8 +22,9 @@ void HistoryRepository::save(const HistoryEntry& entry, const std::string& filep
         throw StorageError("Не удалось открыть файл истории для записи");
     }
 
-    // Обращение к приватным полям заменено на вызов геттеров
-    file << "[" << entry.getDate() << "] " << entry.getExpression() << " = " << entry.getResult() << "\n";
+    file << "[" << historyEntry.getDate() << "] " 
+         << historyEntry.getExpression() << " = " 
+         << historyEntry.getResult() << "\n";
 }
 
 } // namespace mogg

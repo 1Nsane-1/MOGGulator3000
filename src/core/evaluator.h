@@ -6,9 +6,9 @@ namespace mogg {
 
 class Evaluator {
 public:
+    static constexpr double COMPARISON_EPSILON = 1e-6;
+
     Evaluator() = default;
-    
-    // Вычисление нормализованного выражения с генерацией шагов
     double evaluate(const std::string& expression, StepGenerator& stepGen);
 };
 
