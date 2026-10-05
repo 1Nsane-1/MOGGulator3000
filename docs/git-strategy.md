@@ -22,7 +22,7 @@
 | Тип ветки | Шаблон имени | Назначение |
 |-----------|--------------|------------|
 | Основная | main | Релизный, полностью протестированный код C++[cite: 8] |
-| Функционал | feature/* | Разработка новых фич (например, feature/rpn-evaluator, feature/step-formatter)[cite: 8] |
+| Функционал | feature/* | Разработка новых фич (например, feature/step-formatting)[cite: 8] |
 | Багфикс | bugfix/* | Исправление багов и доработка логгирования (например, bugfix/epsilon-precision)[cite: 8] |
 | Релизная | release/* | Подготовка релиза v1.0, сверка документации и CHANGELOG[cite: 8] |
 
@@ -34,19 +34,22 @@
 - Ветки: feature/step-formatting vs bugfix/epsilon-precision[cite: 8]
 - Причина: Обе ветки параллельно модифицировали блок обработки оператора деления `/`: одна ветка добавляла проверку COMPARISON_EPSILON, а вторая — вывод шагов вычисления в StepGenerator[cite: 8].
 - Решение: Маркеры конфликта удалены, логика объединена[cite: 8]: сохранена проверка деления на ноль с константой COMPARISON_EPSILON и добавлен вывод сформированного шага через stepGen.addStep()[cite: 8].
-- Коммит фиксации: c1a9f32 ("fix(evaluator): разрешён конфликт объединения проверки EPSILON и StepGenerator")[cite: 8].
+- Коммит фиксации: 13e1ded ("fix(evaluator): разрешён конфликт объединения проверки EPSILON и StepGenerator")[cite: 8].
 
 ---
 
 ## Визуализация истории (git log --graph)
 
-*   c1a9f32 (HEAD -> main, tag: v1.0) Merge branch 'release/v1.0'
+```text
+* 03528c2 (HEAD -> main, origin/main, origin/HEAD) Update2.0
+* 9eb8fd7 Update
+*   13e1ded (tag: v1.0, origin/release/v1.0, release/v1.0) fix(evaluator): разрешён конфликт объединения проверки EPSILON и StepGenerator
 |\  
-| * a0b1c2d (release/v1.0) docs: подготовлен CHANGELOG.md и релиз v1.0
+| * 4f1acbf (origin/feature/step-formatting, feature/step-formatting) feat(eval): форматирование вывода шагов для StepGenerator
+* | 74759c8 (origin/bugfix/epsilon-precision, bugfix/epsilon-precision) fix(eval): добавление проверки COMPARISON_EPSILON
 |/  
-*   f8e7d6c Merge branch 'feature/step-formatting' into main (разрешение конфликта)
-|\  
-| * e5f4d3c (feature/step-formatting) feat(eval): форматирование вывода шагов для StepGenerator
-* | d3c2b1a (bugfix/epsilon-precision) fix(eval): добавление проверки COMPARISON_EPSILON
-|/  
-* 9a8b7c6 docs: обновлены метрики качества ПО для дня 12
+* 27c73ea UPD2
+* 461cc94 docs: приведен отчет к 13 метрикам, обновлены скриншоты и пути ревью d12
+* 44f4027 UPD
+* 128892e docs: добавлено взаимное ревью code-review_d12.md и обновлён дневник
+* c7152d3 docs: добавлено взаимное ревью code-review_d12.md и обновлён дневник
